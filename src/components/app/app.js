@@ -12,10 +12,11 @@ class App extends Component {
     super(props)
     this.state = {
       data: [
-        { name: 'Ivan', salary: 1500, increase: true, id: 1 },
-        { name: 'liza', salary: 500, increase: false, id: 2 },
-        { name: 'anya', salary: 150, increase: false, id: 3 },
+        { name: 'Ivan', salary: 1500, increase: true, rise: true, id: 1 },
+        { name: 'liza', salary: 500, increase: false, rise: false, id: 2 },
+        { name: 'anya', salary: 150, increase: false, rise: false, id: 3 },
       ],
+      term: '',
     }
   }
 
@@ -31,6 +32,7 @@ class App extends Component {
       name: name,
       salary: salary,
       increase: false,
+      rise: false,
       id: Math.floor(Math.random() * 100),
     }
     this.setState(({ data }) => {
@@ -39,18 +41,57 @@ class App extends Component {
       }
     })
   }
+  filterItem = (str) => {
+    this.setState({ term: str })
+  }
+  onToggleIncrease = (id) => {
+    this.setState({
+      data: this.state.data.map((item) => {
+        if (item.id === id) {
+          return { ...item, increase: !item.increase }
+        }
+        return item
+      }),
+    })
+  }
+  onToggleRise = (id) => {
+    this.setState({
+      data: this.state.data.map((item) => {
+        if (item.id === id) {
+          return { ...item, rise: !item.rise }
+        }
+        return item
+      }),
+    })
+  }
+  searchTerm = (items, term) => {
+    if (term.length === 0) {
+      return items
+    }
+    return items.filter((item) => {
+      return item.name.indexOf(term) > -1
+    })
+  }
 
   render() {
-    const { data } = this.state
+    const { data, term } = this.state
+    const numOfEmp = data.length
+    const numOfEmpRise = data.filter((item) => item.increase).length
+    const visibleItems = this.searchTerm(data, term)
     return (
       <div className='app'>
-        <AppInfo />
+        <AppInfo numOfEmp={numOfEmp} numOfEmpRise={numOfEmpRise} />
 
         <div className='search-panel'>
-          <SearchPanel />
+          <SearchPanel filterItem={this.filterItem} />
           <AppFilter />
         </div>
-        <EmployeesList data={data} onDelete={this.deleteItem} />
+        <EmployeesList
+          data={visibleItems}
+          onDelete={this.deleteItem}
+          onToggleIncrease={this.onToggleIncrease}
+          onToggleRise={this.onToggleRise}
+        />
         <EmployeesAddForm onAddItem={this.addItem} />
       </div>
     )
