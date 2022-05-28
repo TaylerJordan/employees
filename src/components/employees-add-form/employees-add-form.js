@@ -9,10 +9,17 @@ class EmployeesAddForm extends Component {
       salary: '',
     }
   }
-  gubu = (e) => {
-    const big = e.target.value.toUpperCase()
+  autoChangeState = (e) => {
     this.setState({
-      [e.target.name]: big,
+      [e.target.name]: e.target.value,
+    })
+  }
+  submitFormAddNewItem = (e) => {
+    e.preventDefault()
+    this.props.onAddItem(this.state.name, this.state.salary)
+    this.setState({
+      name: '',
+      salary: '',
     })
   }
   render() {
@@ -21,14 +28,14 @@ class EmployeesAddForm extends Component {
     return (
       <div className='app-add-form'>
         <h3>Добавьте нового сотрудника</h3>
-        <form className='add-form d-flex'>
+        <form onSubmit={this.submitFormAddNewItem} className='add-form d-flex'>
           <input
             type='text'
             className='form-control new-post-label'
             placeholder='Как его зовут?'
             value={name}
             name='name'
-            onChange={this.gubu}
+            onChange={this.autoChangeState}
           />
           <input
             type='number'
@@ -36,7 +43,7 @@ class EmployeesAddForm extends Component {
             placeholder='З/П в $?'
             value={salary}
             name='salary'
-            onChange={this.gubu}
+            onChange={this.autoChangeState}
           />
 
           <button type='submit' className='btn btn-outline-light'>
